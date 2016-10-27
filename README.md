@@ -3,7 +3,7 @@
 
 # \<create-directory\>
 
-_[Demo and API docs]()_
+_[Demo and API docs](http://dcache-elements.github.io/create-directory/)_
 
 A dialog box content for creating a directory. This element can  
 be attached to an element that implement 
