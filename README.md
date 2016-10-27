@@ -9,11 +9,10 @@ A dialog box content for creating a directory. This element can
 be attached to an element that implement 
 `Polymer.PaperDialogBehavior` and `paper-dialog-shared-styles.html`.
 
-For example, if <x-dialog-impl> implements this behavior:
+For example, if `\<x-dialog-impl\>` implements this behavior:
 
 ```html
 <x-dialog-impl>
     <create-directory dir-full-path="/abc/def"></create-directory>
 </x-dialog-impl>
 ```
-
