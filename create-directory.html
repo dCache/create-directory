@@ -208,7 +208,7 @@ A form for creating a directory using iron-ajax
       _createHandler: function(e) 
       {
         if (this.__sanityCheck(this.newFolderName, true) == false) {
-         this.fire('create', e);
+         this.fire('create', {newFolderName: this.newFolderName});
        }
       }
     });
