@@ -31,6 +31,10 @@
               c.addEventListener('create',function(e) {
                 console.log("creating...");
               });
+              c.addEventListener('close',function(e) {
+                console.log("closing...");
+                x.close();
+              });
               x.appendChild(c);
               x.open();
             }
