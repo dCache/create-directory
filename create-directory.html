@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
@@ -82,75 +82,81 @@ A form for creating a directory using iron-ajax
   </template>
 
   <script>
-    Polymer({
+    class CreateDirectory extends Polymer.Element
+    {
+      static get is()
+      {
+        return 'create-directory'; 
+      }
 
-      is: 'create-directory',
+      static get properties()
+      {
+        return {
 
-      properties: {
-        /**
-         * The parent full path for the new directory to be created.
-         * @attribute dir-full-path
-         * @type {String}
-         */
-        dirFullPath: {
-          type: String,
-          notify: true
-        },
+          /**
+          * The parent full path for the new directory to be created.
+          * @attribute dir-full-path
+          * @type {String}
+          */
+          dirFullPath: {
+            type: String,
+            notify: true
+          },
 
-        /**
-         * The parent name of the parent directory where the new folder
-         * will reside. The value of this property will be extrapolated
-         * from the `dirFullPath` property.
-         * @type {String}
-         * @private
-         */
-        currentDirName: {
-          type: String,
-          computed: '_computeDirName(dirFullPath)'
-        },
+          /**
+          * The parent name of the parent directory where the new folder
+          * will reside. The value of this property will be extrapolated
+          * from the `dirFullPath` property.
+          * @type {String}
+          * @private
+          */
+          currentDirName: {
+            type: String,
+            computed: '_computeDirName(dirFullPath)'
+          },
 
-        /**
-         * The name of the new folder to be created.
-         * @attribute new-folder-name
-         * @type {String}
-         */
-        newFolderName: {
-          type: String,
-          notify: true,
-        },
+          /**
+          * The name of the new folder to be created.
+          * @attribute new-folder-name
+          * @type {String}
+          */
+          newFolderName: {
+            type: String,
+            notify: true,
+            observer: '_errorTrigger'
+          },
 
-        /**
-         * @private
-         * type {object}
-         */
-        target: {
-          type: Object,
-          value: function() {
-            return document.body;
+          /**
+          * @private
+          * type {object}
+          */
+          target: {
+            type: Object,
+            value: function() {
+              return document.body;
+            }
+          },
+
+          /**
+          * @attribute message
+          * type {String}
+          */
+          message: {
+            type: String,
+            notify: true,
           }
-        },
-
-        /**
-         * @attribute message
-         * type {String}
-         */
-        message: {
-          type: String,
-          notify: true,
         }
-      },
-
-      observers: [
-        '_errorTrigger(newFolderName)'
-      ],
+      }
 
       /* @private*/
-      _errorTrigger: function(newFolderName) {
+      _errorTrigger(newFolderName, oldFolderName)
+      {
         this.__sanityCheck(newFolderName, true);
-      },
+      }
 
       /* @private*/
-      __sanityCheck: function(x, y) {
+      __sanityCheck(x, y)
+      {
         if (y) {
           if (x == null || x == "" || x.includes("/")) {
             this.message = 'Folder name can not be empty or contain forward slash!';
@@ -164,14 +170,15 @@ A form for creating a directory using iron-ajax
           }
           return false
         }
-      },
+      }
 
       /**
        * Determine the directory name from the directory full path.
        * type {Function}
        * @Private
        */
-      _computeDirName: function(dirFullPath) {
+      _computeDirName(dirFullPath)
+      {
        if (this.__sanityCheck(dirFullPath, false) == true) {
          return;
        }
@@ -184,34 +191,38 @@ A form for creating a directory using iron-ajax
               ? dirFullPath = dirFullPath.slice(0,-1): dirFullPath;
             return dirFullPath.substring(dirFullPath.lastIndexOf("/")+1, dirFullPath.length);
         }
-      },
+      }
 
       /**
        * The `Enter` key will fire the `create` eventlistner and the Escape 
        *  key excute the `close` eventlistner.
        */
-      _action: function(e)
+      _action(e)
       {
         e.detail.combo == 'enter' ? this._createHandler(e) : this._closeHandler(e);
-      },
+      }
 
       /**
        * @event create
        */
-      _createHandler: function(e) 
+      _createHandler(e)
       {
         if (this.__sanityCheck(this.newFolderName, true) == false) {
-          this.fire('create', {newFolderName: this.newFolderName});
+          //this.fire('create', {newFolderName: this.newFolderName});
+          this.dispatchEvent(new CustomEvent('create', {detail: {newFolderName: this.newFolderName}}));
         }
-      },
+      }
 
       /**
        * @event close
        */
-      _closeHandler: function(e) 
+      _closeHandler(e)
       {
-        this.fire('close', {});
+        //this.fire('close', {});
+        this.dispatchEvent(new CustomEvent('close', {detail: {}}));
       }
-    });
+    }
+
+    CreateDirectory.define(CreateDirectory.is, CreateDirectory);
   </script>
 </dom-module>
