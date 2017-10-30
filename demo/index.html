@@ -18,7 +18,7 @@
   <body>
 
     <div class="vertical-section-container centered">
-      <h3>Demo: use `create-directory` element inside a custom dialog box</h3>
+      <h3>Demo: use `create-directory` element inside a custom dialog box - with `app-toolbar`</h3>
       <demo-snippet>
         <template>
           <button onclick="openDialog()">Open</button>
@@ -35,6 +35,7 @@
                 console.log("closing...");
                 x.close();
               });
+              x.innerHTML="";
               x.appendChild(c);
               x.open();
             }
@@ -42,21 +43,43 @@
         </template>
       </demo-snippet>
     </div>
-    <script>
-      //Solution for autofocus problem: 
-      //http://stackoverflow.com/questions/31600258/autofocus-paper-input-in-a-paper-dialog-works-only-once
-      window.addEventListener('iron-overlay-opened', function(event) {
-        var input = event.target.querySelector('[autofocus]');
-        switch(input.tagName.toLowerCase()) {
-          case 'input':
-              input.focus();
-              break;
-          case 'paper-textarea':
-          case 'paper-input':
-              input.$.input.focus();
-              break;
-        }
-      });
-    </script>
+
+    <div class="vertical-section-container centered">
+      <h3>Demo: use `create-directory` element inside a custom dialog box - without `app-toolbar`</h3>
+      <demo-snippet>
+        <template>
+          <button onclick="openDialog2()">Open</button>
+          <x-dialog id="dialog"></x-dialog>
+          <script>
+            function openDialog2() {
+              var x = document.querySelector('#dialog');
+              var c = document.createElement("create-directory");
+              c.header = false;
+              c.dirFullPath = "/abc/def";
+              c.addEventListener('create',function(e) {
+                console.log("creating...");
+              });
+              c.addEventListener('close',function(e) {
+                console.log("closing...");
+                x.close();
+              });
+              x.innerHTML="";
+              x.appendChild(c);
+              x.open();
+            }
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+
+
+     <div class="vertical-section-container centered">
+      <h3>Demo: use `create-directory` element plainly</h3>
+      <demo-snippet>
+        <template>
+          <create-directory dir-full-path="/"></create-directory>
+        </template>
+      </demo-snippet>
+    </div>
   </body>
 </html>

@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
@@ -18,14 +19,12 @@ A form for creating a directory using iron-ajax
     <style>
       :host {
         display: block;
-        width: 100hv;
       }
-      .headerContainer {
+      #headerContainer {
         display: flex;
         height: 50px;
         align-items: center;
         border-bottom: 1px solid #d6d6d6;
-        margin-bottom: 20px;
         background-color: #fff;
         color: #333;
       }
@@ -35,10 +34,10 @@ A form for creating a directory using iron-ajax
       .flex2 {
         flex-grow: 2;
       }
-      paper-input [prefix] {
+      paper-input iron-icon {
         margin-right: 13px !important;
       }
-      .buttons{
+      .buttons {
         display: flex;
         height:50px;
         align-items: center;
@@ -51,15 +50,31 @@ A form for creating a directory using iron-ajax
       paper-button {
         text-transform: capitalize !important;
       }
+      .hide {
+        display: none !important;
+      }
+      .show {
+        display: block;
+      }
+      app-toolbar {
+        height: 60px;
+        background: #616161;
+        color: #fff;
+      }
     </style>
     <div>
-      <div class="headerContainer">
+      <app-toolbar class$="[[_comptedClass(header, 'toolbar')]]">
+        <div main-title>Create new directory</div>
+        <paper-icon-button icon="createdir:close" on-tap="_closeHandler"></paper-icon-button>
+      </app-toolbar>
+
+      <div id="headerContainer" class$="[[_comptedClass(header, 'div')]]">
         <div class="flex"><h3>Create new directory</h3></div>
         <span class="flex2"></span>
-        <paper-icon-button id="closeBtn" icon="close" on-tap="_closeHandler"></paper-icon-button>
+        <paper-icon-button icon="createdir:close" on-tap="_closeHandler"></paper-icon-button>
       </div>
       <div>
-        <div class="flex">
+        <div class="flex" style="margin-top: 20px;">
           <iron-a11y-keys target="[[target]]" keys="esc enter" on-keys-pressed="_action"></iron-a11y-keys>
           <span>
             This new folder will be created inside the 
@@ -69,7 +84,7 @@ A form for creating a directory using iron-ajax
                         value="{{newFolderName::input}}" auto-validate pattern="[^/]*" 
                         error-message="[[message]]" 
                         required preventInvalidInput tabindex="1" autofocus>
-            <iron-icon icon="folder" prefix></iron-icon>
+            <iron-icon icon="createdir:folder" slot="prefix"></iron-icon>
           </paper-input>
         </div>
         <br>
@@ -86,12 +101,20 @@ A form for creating a directory using iron-ajax
     {
       static get is()
       {
-        return 'create-directory'; 
+        return 'create-directory';
       }
 
       static get properties()
       {
         return {
+          /**
+           *
+           */
+          header: {
+            type: Boolean,
+            value: true,
+            notify: true
+          },
 
           /**
           * The parent full path for the new directory to be created.
@@ -159,17 +182,28 @@ A form for creating a directory using iron-ajax
       {
         if (y) {
           if (x == null || x == "" || x.includes("/")) {
-            this.message = 'Folder name can not be empty or contain forward slash!';
+            this.message = 'Folder name can not be empty ' +
+              'or contain forward slash!';
             return true;
           }
           return false
         } else {
           if (x == null || x == "") {
-            this.message = "Specify the full path of the current directory.";
+            this.message = "Specify the full path of the " +
+              "current directory.";
             return true;
           }
           return false
         }
+      }
+
+      /* @private*/
+      _comptedClass(header, nodeName)
+      {
+        if (header) {
+          return nodeName === 'toolbar'? '': ' hide';
+        }
+        return nodeName === 'div'? ' show': ' hide';
       }
 
       /**
@@ -189,7 +223,8 @@ A form for creating a directory using iron-ajax
           default:
             dirFullPath.endsWith("/")
               ? dirFullPath = dirFullPath.slice(0,-1): dirFullPath;
-            return dirFullPath.substring(dirFullPath.lastIndexOf("/")+1, dirFullPath.length);
+            return dirFullPath.substring(dirFullPath.lastIndexOf("/")+1,
+              dirFullPath.length);
         }
       }
 
@@ -199,7 +234,8 @@ A form for creating a directory using iron-ajax
        */
       _action(e)
       {
-        e.detail.combo == 'enter' ? this._createHandler(e) : this._closeHandler(e);
+        e.detail.combo == 'enter' ?
+          this._createHandler(e) : this._closeHandler(e);
       }
 
       /**
@@ -208,8 +244,8 @@ A form for creating a directory using iron-ajax
       _createHandler(e)
       {
         if (this.__sanityCheck(this.newFolderName, true) == false) {
-          //this.fire('create', {newFolderName: this.newFolderName});
-          this.dispatchEvent(new CustomEvent('create', {detail: {newFolderName: this.newFolderName}}));
+          this.dispatchEvent(new CustomEvent('create',
+            {detail: {newFolderName: this.newFolderName}}));
         }
       }
 
@@ -218,11 +254,9 @@ A form for creating a directory using iron-ajax
        */
       _closeHandler(e)
       {
-        //this.fire('close', {});
         this.dispatchEvent(new CustomEvent('close', {detail: {}}));
       }
     }
-
-    customElements.define(CreateDirectory.is, CreateDirectory);
+    window.customElements.define(CreateDirectory.is, CreateDirectory);
   </script>
 </dom-module>
